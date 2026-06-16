@@ -101,7 +101,7 @@ function AddressStep({ selected, setSelected, onContinue }) {
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'Name is required';
-    if (!/^\\d{10}$/.test(form.phone)) e.phone = 'Enter a valid 10-digit phone number';
+    if (!/^\d{10}$/.test(form.phone)) e.phone = 'Enter a valid 10-digit phone number';
     if (!form.flat.trim()) e.flat = 'Flat / Building is required';
     if (!form.area.trim()) e.area = 'Area is required';
     if (!SERVICEABLE_PINCODES.includes(form.pincode.trim())) {
