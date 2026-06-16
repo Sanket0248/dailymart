@@ -9,7 +9,7 @@ export async function getSettings() {
   if (error) {
     // fallback to defaults if settings table not yet set up
     return {
-      store_name: 'DailyMart',
+      store_name: 'Balaji Traders',
       tagline: "Your Neighbourhood Store",
       phone: '+91 8889898961',
       whatsapp: '918889898961',

@@ -45,7 +45,7 @@ export const useAuthStore = create(
             params: {
               authorization: apiKey,
               route: 'q',
-              message: `Your DailyMart verification code is ${otp}`,
+              message: `Your Balaji Traders verification code is ${otp}`,
               language: 'english',
               flash: 0,
               numbers: phone,
@@ -77,8 +77,8 @@ export const useAuthStore = create(
              throw new Error('Invalid OTP. Please check and try again.');
           }
 
-          const email = `${currentPhone}@dailymart.com`;
-          const password = `DailyMart${currentPhone}!`;
+          const email = `${currentPhone}@balajitraders.com`;
+          const password = `BalajiTraders${currentPhone}!`;
 
           let fbUser;
           try {

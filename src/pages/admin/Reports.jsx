@@ -56,7 +56,7 @@ export default function Reports() {
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'dailymart-report.csv'; a.click();
+    a.href = url; a.download = 'balajitraders-report.csv'; a.click();
     URL.revokeObjectURL(url);
     toast.success('CSV exported!');
   };

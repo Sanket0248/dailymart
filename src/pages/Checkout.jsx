@@ -236,8 +236,8 @@ function PaymentStep({ selectedPayment, setSelectedPayment, onPlaceOrder, loadin
             </div>
             <div>
               <p className="text-xs font-700 text-text-heading">UPI ID</p>
-              <p className="text-sm font-700 text-brand-600">dailymart@upi</p>
-              <p className="text-[11px] text-text-sub mt-1">DailyMart – Joura</p>
+              <p className="text-sm font-700 text-brand-600">balajitraders@upi</p>
+              <p className="text-[11px] text-text-sub mt-1">Balaji Traders – Joura</p>
             </div>
           </div>
         </div>

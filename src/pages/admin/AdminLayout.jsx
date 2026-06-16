@@ -55,7 +55,7 @@ function SidebarContent({ onNavClick }) {
           <Leaf size={20} className="text-white" />
         </div>
         <div>
-          <p className="text-white font-bold text-sm leading-tight">DailyMart</p>
+          <p className="text-white font-bold text-sm leading-tight">Balaji Traders</p>
           <p className="text-slate-400 text-xs">Admin Panel</p>
         </div>
       </div>
@@ -203,7 +203,7 @@ function AdminLoginPage() {
           <div className="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand-500/30">
             <Lock size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">DailyMart Admin</h1>
+          <h1 className="text-2xl font-bold text-white">Balaji Traders Admin</h1>
           <p className="text-slate-400 text-sm mt-1">Sign in with your admin phone number</p>
         </div>
 
@@ -402,7 +402,7 @@ export default function AdminLayout() {
             >
               <Menu size={22} />
             </button>
-            <h1 className="text-lg font-bold text-text-heading hidden sm:block">DailyMart Admin</h1>
+            <h1 className="text-lg font-bold text-text-heading hidden sm:block">Balaji Traders Admin</h1>
           </div>
 
           {/* Admin user */}

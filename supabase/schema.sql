@@ -161,7 +161,7 @@ ALTER TABLE order_items DISABLE ROW LEVEL SECURITY;
 -- ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS settings (
   id                    INT PRIMARY KEY DEFAULT 1,
-  store_name            TEXT DEFAULT 'DailyMart',
+  store_name            TEXT DEFAULT 'Balaji Traders',
   tagline               TEXT DEFAULT 'Your Neighbourhood Store',
   phone                 TEXT,
   whatsapp              TEXT,
@@ -235,7 +235,7 @@ $$;
 INSERT INTO settings (id, store_name, tagline, phone, whatsapp, address, city, pincode, delivery_free_above, delivery_fee, gst, open_time, close_time, serviceable_pincodes)
 VALUES (
   1,
-  'DailyMart',
+  'Balaji Traders',
   'Your Neighbourhood Store',
   '+91 8889898961',
   '918889898961',

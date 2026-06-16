@@ -23,20 +23,10 @@ export default function TopBar() {
       <Link
         to="/"
         className="flex items-center gap-2 select-none active-scale"
-        aria-label="DailyMart home"
+        aria-label="Balaji Traders home"
       >
-        <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-glow">
-          <Leaf size={20} className="text-white" strokeWidth={2.5} />
-        </div>
-
-        <div className="flex flex-col justify-center">
-          <span className="text-[17px] font-800 tracking-tight leading-none text-heading">
-            Daily<span className="text-brand-500">Mart</span>
-          </span>
-          <span className="text-[10px] text-brand-600 font-600 leading-tight">
-            Delivery in 10 mins
-          </span>
-        </div>
+        <img src="/logo.png" alt="Balaji Traders" className="h-8" />
+        <span className="font-800 text-xl tracking-tight text-brand-500">Balaji Traders</span>
       </Link>
 
       {/* ── Desktop Nav links (md+) ─────────────────────────────────── */}

@@ -74,7 +74,7 @@ function OtpLogin() {
     }
     const result = await verifyOtp(code);
     if (result.success) {
-      toast.success('Welcome to DailyMart! 🎉');
+      toast.success('Welcome to Balaji Traders! 🎉');
     } else {
       toast.error(result.error || 'Verification failed. Try again.');
     }
@@ -97,7 +97,7 @@ function OtpLogin() {
       <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mb-5">
         <User size={36} className="text-slate-300" strokeWidth={1.5} />
       </div>
-      <h2 className="text-xl font-700 text-text-heading mb-1">Sign in to DailyMart</h2>
+      <h2 className="text-xl font-700 text-text-heading mb-1">Sign in to Balaji Traders</h2>
       <p className="text-sm text-text-sub mb-8 max-w-[240px]">
         Access your orders, saved addresses and more
       </p>
@@ -141,7 +141,7 @@ function OtpLogin() {
           <button
             onClick={async () => {
               const res = await signInWithGoogle();
-              if (res.success) toast.success('Welcome to DailyMart! 🎉');
+              if (res.success) toast.success('Welcome to Balaji Traders! 🎉');
               else toast.error(res.error || 'Google login failed');
             }}
             disabled={isLoading}
@@ -396,19 +396,23 @@ function LoggedInView({ user, logout }) {
           </div>
 
           <button
-            onClick={() => toast('About DailyMart – Version 1.0.0, Joura MP')}
+            onClick={() => toast('About Balaji Traders – Version 1.0.0, Joura MP')}
             className="w-full flex items-center gap-2 px-4 py-3 active:bg-slate-50 transition-colors"
           >
-            <Info size={16} className="text-text-sub" />
-            <span className="text-sm text-text-sub flex-1 text-left">About DailyMart</span>
+            <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center flex-shrink-0">
+              <Info size={16} className="text-slate-600" />
+            </div>
+            <span className="text-sm text-text-sub flex-1 text-left">About Balaji Traders</span>
             <ChevronRight size={16} className="text-slate-300" />
           </button>
         </div>
 
         {/* App version */}
-        <p className="text-center text-[11px] text-text-muted py-2">
-          DailyMart v1.0 · Joura, Madhya Pradesh
-        </p>
+        <div className="mt-8 mb-4 text-center">
+          <p className="text-xs text-slate-400 font-500">
+            Balaji Traders v1.0 · Joura, Madhya Pradesh
+          </p>
+        </div>
 
         {/* Logout */}
         <button
