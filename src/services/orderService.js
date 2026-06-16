@@ -37,7 +37,8 @@ export async function placeOrder({
   if (orderError) throw orderError;
 
   // Insert order items
-  const orderItems = items.map((item) => ({
+  const validItems = items.filter((item) => item?.product?.id);
+  const orderItems = validItems.map((item) => ({
     order_id: orderId,
     product_id: item.product.id,
     product_name: item.product.name,
@@ -54,7 +55,7 @@ export async function placeOrder({
   // Decrement stock for each item
   try {
     await supabase.rpc('decrement_stock', {
-      items: items.map((i) => ({ product_id: i.product.id, qty: i.qty })),
+      items: validItems.map((i) => ({ product_id: i.product.id, qty: i.qty })),
     });
   } catch (e) {
     console.warn('Stock decrement failed (non-critical):', e);

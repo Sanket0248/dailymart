@@ -87,6 +87,15 @@ export const useCartStore = create(
     {
       name: 'dailymart-cart',
       partialize: (state) => ({ items: state.items, coupon: state.coupon }),
+      // Migrate/sanitize old cart formats on hydration
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray(state.items)) {
+          // Drop any item that doesn't have a valid nested product object
+          state.items = state.items.filter(
+            (i) => i && i.product && typeof i.product === 'object' && i.product.id
+          );
+        }
+      },
     }
   )
 );

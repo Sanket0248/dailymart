@@ -342,7 +342,7 @@ function PaymentStep({ selectedPayment, setSelectedPayment, onPlaceOrder, loadin
 
         {summaryOpen && (
           <div className="px-4 pb-4 space-y-2 border-t border-slate-100 pt-3 animate-fade-in">
-            {items.map(({ product, qty }) => (
+            {items.filter(i => i?.product?.id).map(({ product, qty }) => (
               <div key={product.id} className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 bg-slate-50">
                   <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="lazy" />

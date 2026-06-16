@@ -129,7 +129,7 @@ export default function Cart() {
       <div className="flex-1 overflow-y-auto px-4 py-3 pb-36 space-y-3">
         {/* Cart Items */}
         <div className="space-y-2 animate-fade-slide-up">
-          {items.map(({ product, qty }) => (
+          {items.filter(i => i?.product?.id).map(({ product, qty }) => (
             <div
               key={product.id}
               className="bg-white rounded-card shadow-card p-3 flex gap-3 items-start"
