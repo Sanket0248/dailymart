@@ -338,16 +338,7 @@ function AdminLoginPage() {
           </div>
         )}
 
-        {/* Quick Admin Access (testing) */}
-        <div className="mt-4 text-center">
-          <button
-            onClick={handleMockAdmin}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 border border-slate-700 hover:border-slate-600 rounded-lg px-3 py-2 transition-all"
-          >
-            <Zap size={11} className="text-amber-500" />
-            Quick Admin Access
-          </button>
-        </div>
+        {/* Quick Admin Access (removed for security) */}
 
         <div className="text-center mt-3">
           <Link to="/" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
