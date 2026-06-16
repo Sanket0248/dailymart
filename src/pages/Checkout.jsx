@@ -27,16 +27,28 @@ const STEPS = [
 
 const SERVICEABLE_PINCODES = STORE_INFO.serviceablePincodes;
 
-const SAVED_ADDRESS = {
-  id: 'addr1',
-  name: 'Rajan Sharma',
-  phone: '9876543210',
-  flat: '12, Shanti Nagar',
-  area: 'Main Market',
-  landmark: '',
-  city: 'Joura',
-  pincode: '476221',
-};
+function InputField({ label, value, onChange, error, placeholder, type = 'text', inputMode = 'text', optional }) {
+  return (
+    <div>
+      <label className="text-xs font-600 text-text-sub mb-1 block">
+        {label} {optional && <span className="text-text-muted font-400">(optional)</span>}
+      </label>
+      <input
+        type={type}
+        inputMode={inputMode}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`w-full h-11 px-3 border rounded-lg text-sm text-text-heading placeholder:text-slate-400 focus:outline-none focus:ring-1 transition-colors ${
+          error
+            ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
+            : 'border-slate-200 focus:border-brand-400 focus:ring-brand-200'
+        }`}
+      />
+      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    </div>
+  );
+}
 
 function StepIndicator({ currentStep }) {
   return (
@@ -81,8 +93,7 @@ function StepIndicator({ currentStep }) {
 }
 
 function AddressStep({ selected, setSelected, onContinue }) {
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(selected || {
     name: '', phone: '', flat: '', area: '', landmark: '', pincode: '', city: '',
   });
   const [errors, setErrors] = useState({});
@@ -90,7 +101,7 @@ function AddressStep({ selected, setSelected, onContinue }) {
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'Name is required';
-    if (!/^\d{10}$/.test(form.phone)) e.phone = 'Enter a valid 10-digit phone number';
+    if (!/^\\d{10}$/.test(form.phone)) e.phone = 'Enter a valid 10-digit phone number';
     if (!form.flat.trim()) e.flat = 'Flat / Building is required';
     if (!form.area.trim()) e.area = 'Area is required';
     if (!SERVICEABLE_PINCODES.includes(form.pincode.trim())) {
@@ -106,112 +117,43 @@ function AddressStep({ selected, setSelected, onContinue }) {
       setErrors(e);
       return;
     }
-    setSelected('new');
-    setShowForm(false);
     setErrors({});
+    setSelected(form);
+    onContinue();
   };
-
-  const F = ({ label, field, placeholder, optional }) => (
-    <div>
-      <label className="text-xs font-600 text-text-sub mb-1 block">
-        {label} {optional && <span className="text-text-muted font-400">(optional)</span>}
-      </label>
-      <input
-        type={field === 'phone' || field === 'pincode' ? 'tel' : 'text'}
-        inputMode={field === 'phone' || field === 'pincode' ? 'numeric' : 'text'}
-        value={form[field]}
-        onChange={(e) => setForm((p) => ({ ...p, [field]: e.target.value }))}
-        placeholder={placeholder}
-        className={`w-full h-11 px-3 border rounded-lg text-sm text-text-heading placeholder:text-slate-400 focus:outline-none focus:ring-1 transition-colors ${
-          errors[field]
-            ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
-            : 'border-slate-200 focus:border-brand-400 focus:ring-brand-200'
-        }`}
-      />
-      {errors[field] && <p className="text-xs text-red-500 mt-1">{errors[field]}</p>}
-    </div>
-  );
 
   return (
     <div className="space-y-3 animate-fade-in">
       <h2 className="text-sm font-700 text-text-heading px-1">Delivery Address</h2>
 
-      {/* Saved address */}
-      <div
-        onClick={() => setSelected('saved')}
-        className={`bg-white rounded-card shadow-card p-4 cursor-pointer transition-all border-2 ${
-          selected === 'saved' ? 'border-brand-500' : 'border-transparent'
-        }`}
-      >
-        <div className="flex items-start gap-3">
-          <div
-            className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-              selected === 'saved' ? 'border-brand-500 bg-brand-500' : 'border-slate-300'
-            }`}
-          >
-            {selected === 'saved' && <div className="w-2 h-2 rounded-full bg-white" />}
+      <div className="bg-white rounded-card shadow-card p-4 space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <InputField label="Full Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} error={errors.name} placeholder="Rajan Sharma" />
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-700 text-text-heading">{SAVED_ADDRESS.name}</p>
-              <button className="text-xs text-brand-500 font-600">Edit</button>
-            </div>
-            <p className="text-xs text-text-sub mt-0.5">{SAVED_ADDRESS.phone}</p>
-            <p className="text-xs text-text-sub mt-1 leading-relaxed">
-              {SAVED_ADDRESS.flat}, {SAVED_ADDRESS.area}, {SAVED_ADDRESS.city} –{' '}
-              {SAVED_ADDRESS.pincode}
-            </p>
-            <span className="inline-block mt-1.5 text-[10px] font-600 text-brand-600 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-pill">
-              🏠 Home
-            </span>
+          <div className="col-span-2">
+            <InputField label="Phone Number" type="tel" inputMode="numeric" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} error={errors.phone} placeholder="10-digit number" />
           </div>
+          <div className="col-span-2">
+            <InputField label="Flat / Building" value={form.flat} onChange={(e) => setForm((p) => ({ ...p, flat: e.target.value }))} error={errors.flat} placeholder="House no, Building, Street" />
+          </div>
+          <div className="col-span-2">
+            <InputField label="Area / Colony" value={form.area} onChange={(e) => setForm((p) => ({ ...p, area: e.target.value }))} error={errors.area} placeholder="Area or Colony name" />
+          </div>
+          <div className="col-span-2">
+            <InputField label="Landmark" value={form.landmark} onChange={(e) => setForm((p) => ({ ...p, landmark: e.target.value }))} error={errors.landmark} placeholder="Near school, temple..." optional />
+          </div>
+          <InputField label="Pincode" type="tel" inputMode="numeric" value={form.pincode} onChange={(e) => setForm((p) => ({ ...p, pincode: e.target.value }))} error={errors.pincode} placeholder="476221" />
+          <InputField label="City" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} error={errors.city} placeholder="Joura" />
         </div>
-      </div>
-
-      {/* Add new address */}
-      {!showForm ? (
+        
         <button
-          onClick={() => setShowForm(true)}
-          className="w-full bg-white rounded-card shadow-card p-4 flex items-center gap-3 border-2 border-dashed border-slate-200 active:border-brand-400 transition-colors"
+          onClick={handleSave}
+          className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-3"
         >
-          <MapPin size={18} className="text-brand-500" />
-          <span className="text-sm font-600 text-brand-500">+ Add New Address</span>
+          Save & Continue
         </button>
-      ) : (
-        <div className="bg-white rounded-card shadow-card p-4 space-y-3 animate-fade-slide-up">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="text-sm font-700 text-text-heading">New Address</h3>
-            <button onClick={() => setShowForm(false)} className="text-slate-400 text-xs">
-              Cancel
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><F label="Full Name" field="name" placeholder="Rajan Sharma" /></div>
-            <div className="col-span-2"><F label="Phone Number" field="phone" placeholder="10-digit number" /></div>
-            <div className="col-span-2"><F label="Flat / Building" field="flat" placeholder="House no, Building, Street" /></div>
-            <div className="col-span-2"><F label="Area / Colony" field="area" placeholder="Area or Colony name" /></div>
-            <div className="col-span-2"><F label="Landmark" field="landmark" placeholder="Near school, temple..." optional /></div>
-            <F label="Pincode" field="pincode" placeholder="476221" />
-            <F label="City" field="city" placeholder="Joura" />
-          </div>
-          <button
-            onClick={handleSave}
-            className="w-full h-11 bg-brand-500 text-white font-700 text-sm rounded-btn active:scale-95 transition-transform mt-1"
-          >
-            Save Address
-          </button>
-        </div>
-      )}
-
-      <button
-        onClick={() => {
-          if (!selected) { toast.error('Please select a delivery address'); return; }
-          onContinue();
-        }}
-        className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-2"
-      >
-        Continue
-      </button>
+      </div>
     </div>
   );
 }
@@ -449,7 +391,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [step, setStep] = useState(1);
-  const [selectedAddress, setSelectedAddress] = useState('saved');
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState('express');
   const [selectedPayment, setSelectedPayment] = useState('');
   const [loading, setLoading] = useState(false);
@@ -475,9 +417,7 @@ export default function Checkout() {
       const total = getTotal();
 
       // Build address object
-      const address = selectedAddress === 'saved'
-        ? SAVED_ADDRESS
-        : { name: 'New Address', phone: '', flat: '', area: '', city: '', pincode: '' };
+      const address = selectedAddress || { name: 'New Address', phone: '', flat: '', area: '', city: '', pincode: '' };
 
       const orderId = await placeOrder({
         userUid: user?.uid || 'guest',
