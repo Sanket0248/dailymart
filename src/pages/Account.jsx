@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
+import { useAddressStore } from '@/store/addressStore';
 
 // ─── OTP Login Component ────────────────────────────────────────────────
 function OtpLogin() {
@@ -226,21 +227,11 @@ function OtpLogin() {
 }
 
 // ─── Logged In Profile ──────────────────────────────────────────────────
-const MOCK_ADDRESSES = [
-  {
-    id: 'a1',
-    label: 'Home',
-    name: 'Rajan Sharma',
-    phone: '9876543210',
-    address: '12, Shanti Nagar, Main Market, Joura – 476221',
-  },
-];
-
 function LoggedInView({ user, logout }) {
   const [notifOn, setNotifOn] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [name, setName] = useState(user.name || 'User');
-  const [addresses, setAddresses] = useState(MOCK_ADDRESSES);
+  const { addresses, addAddress, removeAddress } = useAddressStore();
 
   const initials = name
     .split(' ')
@@ -250,7 +241,7 @@ function LoggedInView({ user, logout }) {
     .toUpperCase();
 
   const handleDeleteAddress = (id) => {
-    setAddresses((a) => a.filter((addr) => addr.id !== id));
+    removeAddress(id);
     toast('Address removed', { icon: '🗑️' });
   };
 
@@ -315,13 +306,16 @@ function LoggedInView({ user, logout }) {
             <button
               onClick={() => {
                 const newAddr = {
-                  id: `a${Date.now()}`,
-                  label: 'Other',
+                  label: 'Home',
                   name: name || 'User',
                   phone: displayPhone || '',
-                  address: 'New address – Joura, 476221',
+                  flat: 'New address',
+                  area: 'Joura',
+                  city: 'Joura',
+                  pincode: '476221',
+                  address: 'New address, Joura, 476221',
                 };
-                setAddresses((a) => [...a, newAddr]);
+                addAddress(newAddr);
                 toast.success('New address added');
               }}
               className="flex items-center gap-1 text-xs font-600 text-brand-500"
@@ -348,7 +342,9 @@ function LoggedInView({ user, logout }) {
                       </span>
                     </div>
                     <p className="text-sm font-600 text-text-heading">{addr.name}</p>
-                    <p className="text-xs text-text-sub mt-0.5 leading-relaxed">{addr.address}</p>
+                    <p className="text-xs text-text-sub mt-0.5 leading-relaxed">
+                      {addr.address || `${addr.flat}, ${addr.area}, ${addr.city} - ${addr.pincode}`}
+                    </p>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     <button

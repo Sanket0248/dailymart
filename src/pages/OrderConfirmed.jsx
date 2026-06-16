@@ -1,28 +1,45 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { MapPin, Clock, CheckCircle2, Package } from 'lucide-react';
+import { MapPin, Clock, CheckCircle2, Package, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/utils/helpers';
-
-const CONFIRMED_ADDRESS = {
-  name: 'Rajan Sharma',
-  flat: '12, Shanti Nagar',
-  area: 'Main Market',
-  city: 'Joura',
-  pincode: '476221',
-};
+import { getOrderById } from '@/services/orderService';
 
 export default function OrderConfirmed() {
   const { id } = useParams();
-  const { items, clearCart } = useCartStore();
-
-  // Snapshot items before clearing
-  const snapshot = [...items];
+  const { clearCart } = useCartStore();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => clearCart(), 200);
-    return () => clearTimeout(t);
-  }, [clearCart]);
+    async function fetchOrder() {
+      const data = await getOrderById(id);
+      setOrder(data);
+      setLoading(false);
+      if (data) clearCart();
+    }
+    fetchOrder();
+  }, [id, clearCart]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface-page flex items-center justify-center">
+        <Loader2 className="animate-spin text-brand-500" size={32} />
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-surface-page flex flex-col items-center justify-center p-4">
+        <p className="text-slate-500 mb-4 font-600">Order not found.</p>
+        <Link to="/" className="text-brand-500 font-700">Go back home</Link>
+      </div>
+    );
+  }
+
+  const snapshot = order.order_items;
+  const address = order.address;
 
   return (
     <div className="min-h-screen bg-surface-page flex flex-col items-center justify-start px-4 py-10">
@@ -128,10 +145,10 @@ export default function OrderConfirmed() {
           <MapPin size={16} className="text-brand-500" />
           <span className="text-sm font-700 text-text-heading">Delivery to</span>
         </div>
-        <p className="text-sm font-600 text-text-heading">{CONFIRMED_ADDRESS.name}</p>
+        <p className="text-sm font-600 text-text-heading">{address.name}</p>
         <p className="text-xs text-text-sub mt-0.5 leading-relaxed">
-          {CONFIRMED_ADDRESS.flat}, {CONFIRMED_ADDRESS.area},{' '}
-          {CONFIRMED_ADDRESS.city} – {CONFIRMED_ADDRESS.pincode}
+          {address.flat}, {address.area},{' '}
+          {address.city} – {address.pincode}
         </p>
       </div>
 

@@ -15,6 +15,7 @@ import {
 import toast from 'react-hot-toast';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
+import { useAddressStore } from '@/store/addressStore';
 import { placeOrder } from '@/services/orderService';
 import { DELIVERY_SLOTS, STORE_INFO } from '@/data/mockData';
 import { formatPrice } from '@/utils/helpers';
@@ -93,6 +94,8 @@ function StepIndicator({ currentStep }) {
 }
 
 function AddressStep({ selected, setSelected, onContinue }) {
+  const { addresses, addAddress } = useAddressStore();
+  const [showForm, setShowForm] = useState(addresses.length === 0);
   const [form, setForm] = useState(selected || {
     name: '', phone: '', flat: '', area: '', landmark: '', pincode: '', city: '',
   });
@@ -118,7 +121,14 @@ function AddressStep({ selected, setSelected, onContinue }) {
       return;
     }
     setErrors({});
-    setSelected(form);
+    const newAddr = { ...form };
+    addAddress(newAddr);
+    setSelected(newAddr);
+    onContinue();
+  };
+
+  const handleSelectExisting = (addr) => {
+    setSelected(addr);
     onContinue();
   };
 
@@ -126,8 +136,49 @@ function AddressStep({ selected, setSelected, onContinue }) {
     <div className="space-y-3 animate-fade-in">
       <h2 className="text-sm font-700 text-text-heading px-1">Delivery Address</h2>
 
-      <div className="bg-white rounded-card shadow-card p-4 space-y-3">
-        <div className="grid grid-cols-2 gap-3">
+      {!showForm && addresses.length > 0 && (
+        <div className="space-y-2">
+          {addresses.map((addr) => (
+            <div
+              key={addr.id}
+              onClick={() => handleSelectExisting(addr)}
+              className={`bg-white rounded-card shadow-card p-4 cursor-pointer border-2 transition-all ${
+                selected?.id === addr.id ? 'border-brand-500 bg-brand-50' : 'border-transparent'
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-700 text-brand-600 bg-brand-100 px-2 py-0.5 rounded-pill">
+                  {addr.label || 'Home'}
+                </span>
+              </div>
+              <p className="text-sm font-700 text-text-heading">{addr.name}</p>
+              <p className="text-xs text-text-sub mt-1 leading-relaxed">
+                {addr.flat}, {addr.area}, {addr.city} - {addr.pincode}
+              </p>
+              <p className="text-xs text-text-sub mt-1">Phone: {addr.phone}</p>
+            </div>
+          ))}
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full py-3 text-sm font-600 text-brand-500 bg-brand-50 rounded-btn hover:bg-brand-100 transition-colors"
+          >
+            + Add New Address
+          </button>
+        </div>
+      )}
+
+      {showForm && (
+        <>
+          <div className="bg-white rounded-card shadow-card p-4 space-y-3">
+            {addresses.length > 0 && (
+              <button
+                onClick={() => setShowForm(false)}
+                className="text-xs font-600 text-slate-500 hover:text-brand-500 transition-colors flex items-center gap-1 mb-2"
+              >
+                ← Back to saved addresses
+              </button>
+            )}
+            <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <InputField label="Full Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} error={errors.name} placeholder="Rajan Sharma" />
           </div>
@@ -145,15 +196,16 @@ function AddressStep({ selected, setSelected, onContinue }) {
           </div>
           <InputField label="Pincode" type="tel" inputMode="numeric" value={form.pincode} onChange={(e) => setForm((p) => ({ ...p, pincode: e.target.value }))} error={errors.pincode} placeholder="476221" />
           <InputField label="City" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} error={errors.city} placeholder="Joura" />
-        </div>
-      </div>
-      
-      <button
-        onClick={handleSave}
-        className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-2"
-      >
-        Save & Continue
-      </button>
+            </div>
+          </div>
+          <button
+            onClick={handleSave}
+            className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-2"
+          >
+            Save & Continue
+          </button>
+        </>
+      )}
     </div>
   );
 }
@@ -348,8 +400,9 @@ function PaymentStep({ selectedPayment, setSelectedPayment, onPlaceOrder, loadin
 export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { addresses } = useAddressStore();
   const [step, setStep] = useState(1);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(addresses[0] || null);
   const [selectedSlot, setSelectedSlot] = useState('express');
   const [selectedPayment, setSelectedPayment] = useState('cod');
   const [loading, setLoading] = useState(false);
