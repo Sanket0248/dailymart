@@ -17,6 +17,57 @@ import {
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { useAddressStore } from '@/store/addressStore';
+import { verifyOtp, sendOtp, signInWithGoogle } from '@/services/authService';
+import Input from '@/components/ui/Input';
+
+function AddressForm({ initialData, onSave, onCancel }) {
+  const [form, setForm] = useState(initialData || {
+    name: '', phone: '', flat: '', area: '', landmark: '', pincode: '', city: ''
+  });
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'Required';
+    if (!/^\d{10}$/.test(form.phone)) e.phone = '10 digits required';
+    if (!form.flat.trim()) e.flat = 'Required';
+    if (!form.area.trim()) e.area = 'Required';
+    if (!form.pincode.trim()) e.pincode = 'Required';
+    if (!form.city.trim()) e.city = 'Required';
+    return e;
+  };
+
+  const handleSave = () => {
+    const e = validate();
+    if (Object.keys(e).length > 0) return setErrors(e);
+    onSave(form);
+  };
+
+  return (
+    <div className="bg-slate-50 p-4 rounded-lg space-y-3 mt-2 border border-slate-200">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2">
+          <Input label="Full Name" value={form.name} onChange={e => setForm(p => ({...p, name: e.target.value}))} error={errors.name} />
+        </div>
+        <div className="col-span-2">
+          <Input label="Phone Number" type="tel" inputMode="numeric" value={form.phone} onChange={e => setForm(p => ({...p, phone: e.target.value}))} error={errors.phone} />
+        </div>
+        <div className="col-span-2">
+          <Input label="Flat/Building" value={form.flat} onChange={e => setForm(p => ({...p, flat: e.target.value}))} error={errors.flat} />
+        </div>
+        <div className="col-span-2">
+          <Input label="Area/Colony" value={form.area} onChange={e => setForm(p => ({...p, area: e.target.value}))} error={errors.area} />
+        </div>
+        <Input label="Pincode" type="tel" inputMode="numeric" value={form.pincode} onChange={e => setForm(p => ({...p, pincode: e.target.value}))} error={errors.pincode} />
+        <Input label="City" value={form.city} onChange={e => setForm(p => ({...p, city: e.target.value}))} error={errors.city} />
+      </div>
+      <div className="flex gap-2 pt-2">
+        <button onClick={onCancel} className="flex-1 py-2 text-sm font-600 text-slate-600 border border-slate-300 rounded-btn">Cancel</button>
+        <button onClick={handleSave} className="flex-1 py-2 text-sm font-700 text-white bg-brand-500 rounded-btn shadow-sm">Save</button>
+      </div>
+    </div>
+  );
+}
 
 // ─── OTP Login Component ────────────────────────────────────────────────
 function OtpLogin() {
@@ -231,7 +282,9 @@ function LoggedInView({ user, logout }) {
   const [notifOn, setNotifOn] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [name, setName] = useState(user.name || 'User');
-  const { addresses, addAddress, removeAddress } = useAddressStore();
+  const { addresses, addAddress, removeAddress, updateAddress } = useAddressStore();
+  const [editingAddr, setEditingAddr] = useState(null);
+  const [showAdd, setShowAdd] = useState(false);
 
   const initials = name
     .split(' ')
@@ -304,66 +357,81 @@ function LoggedInView({ user, logout }) {
               <span className="text-sm font-700 text-text-heading">My Addresses</span>
             </div>
             <button
-              onClick={() => {
-                const newAddr = {
-                  label: 'Home',
-                  name: name || 'User',
-                  phone: displayPhone || '',
-                  flat: 'New address',
-                  area: 'Joura',
-                  city: 'Joura',
-                  pincode: '476221',
-                  address: 'New address, Joura, 476221',
-                };
-                addAddress(newAddr);
-                toast.success('New address added');
-              }}
+              onClick={() => setShowAdd(true)}
               className="flex items-center gap-1 text-xs font-600 text-brand-500"
             >
               <Plus size={13} /> Add New
             </button>
           </div>
 
-          {addresses.length === 0 ? (
-            <div className="px-4 py-6 text-center">
-              <p className="text-sm text-text-sub">No saved addresses</p>
-            </div>
-          ) : (
-            addresses.map((addr, idx) => (
-              <div
-                key={addr.id}
-                className={`px-4 py-3 ${idx < addresses.length - 1 ? 'border-b border-slate-100' : ''}`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-700 text-brand-600 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-pill">
-                        🏠 {addr.label}
-                      </span>
-                    </div>
-                    <p className="text-sm font-600 text-text-heading">{addr.name}</p>
-                    <p className="text-xs text-text-sub mt-0.5 leading-relaxed">
-                      {addr.address || `${addr.flat}, ${addr.area}, ${addr.city} - ${addr.pincode}`}
-                    </p>
-                  </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => toast('Edit address (coming soon)')}
-                      className="tap-target text-slate-400 hover:text-brand-500"
-                    >
-                      <Edit2 size={14} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAddress(addr.id)}
-                      className="tap-target text-slate-400 hover:text-red-500"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </div>
+          <div className="px-4 py-3">
+            {showAdd && (
+              <div className="mb-4">
+                <p className="text-sm font-700 text-text-heading mb-2">Add New Address</p>
+                <AddressForm 
+                  onSave={(data) => { 
+                    addAddress({...data, label: 'Home'}); 
+                    setShowAdd(false); 
+                    toast.success('Address added'); 
+                  }} 
+                  onCancel={() => setShowAdd(false)} 
+                />
               </div>
-            ))
-          )}
+            )}
+
+            {addresses.length === 0 && !showAdd ? (
+              <div className="py-4 text-center">
+                <p className="text-sm text-text-sub">No saved addresses</p>
+              </div>
+            ) : (
+              addresses.map((addr, idx) => (
+                <div
+                  key={addr.id}
+                  className={`py-3 ${idx < addresses.length - 1 ? 'border-b border-slate-100' : ''}`}
+                >
+                  {editingAddr === addr.id ? (
+                    <AddressForm 
+                      initialData={addr} 
+                      onSave={(data) => { 
+                        updateAddress(addr.id, {...data}); 
+                        setEditingAddr(null); 
+                        toast.success('Address updated'); 
+                      }} 
+                      onCancel={() => setEditingAddr(null)} 
+                    />
+                  ) : (
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[10px] font-700 text-brand-600 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-pill">
+                            🏠 {addr.label || 'Home'}
+                          </span>
+                        </div>
+                        <p className="text-sm font-600 text-text-heading">{addr.name}</p>
+                        <p className="text-xs text-text-sub mt-0.5 leading-relaxed">
+                          {addr.flat}, {addr.area}, {addr.city} - {addr.pincode}
+                        </p>
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => setEditingAddr(addr.id)}
+                          className="tap-target text-slate-400 hover:text-brand-500"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAddress(addr.id)}
+                          className="tap-target text-slate-400 hover:text-red-500"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Settings */}

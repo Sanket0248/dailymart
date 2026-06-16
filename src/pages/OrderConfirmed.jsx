@@ -102,24 +102,24 @@ export default function OrderConfirmed() {
             </span>
           </div>
           <div className="space-y-2">
-            {snapshot.slice(0, 4).map(({ product, qty }) => (
-              <div key={product.id} className="flex items-center gap-3">
+            {snapshot.slice(0, 4).map((item) => (
+              <div key={item.product_id || item.id} className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-50 flex-shrink-0">
                   <img
-                    src={product.image}
-                    alt={product.name}
+                    src={item.product_image}
+                    alt={item.product_name}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-600 text-text-heading line-clamp-1">
-                    {product.name}
+                    {item.product_name}
                   </p>
-                  <p className="text-[11px] text-text-sub">×{qty}</p>
+                  <p className="text-[11px] text-text-sub">×{item.qty}</p>
                 </div>
                 <p className="text-xs font-700 text-brand-600">
-                  {formatPrice(product.price * qty)}
+                  {formatPrice(item.price * item.qty)}
                 </p>
               </div>
             ))}
