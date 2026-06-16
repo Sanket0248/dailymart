@@ -146,14 +146,14 @@ function AddressStep({ selected, setSelected, onContinue }) {
           <InputField label="Pincode" type="tel" inputMode="numeric" value={form.pincode} onChange={(e) => setForm((p) => ({ ...p, pincode: e.target.value }))} error={errors.pincode} placeholder="476221" />
           <InputField label="City" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} error={errors.city} placeholder="Joura" />
         </div>
-        
-        <button
-          onClick={handleSave}
-          className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-3"
-        >
-          Save & Continue
-        </button>
       </div>
+      
+      <button
+        onClick={handleSave}
+        className="w-full h-13 bg-brand-500 text-white font-700 text-[15px] rounded-btn active:scale-[0.98] transition-all shadow-sm mt-2"
+      >
+        Save & Continue
+      </button>
     </div>
   );
 }
@@ -218,52 +218,10 @@ function PaymentStep({ selectedPayment, setSelectedPayment, onPlaceOrder, loadin
 
   const METHODS = [
     {
-      id: 'upi',
-      icon: <Wallet size={20} className="text-brand-500" />,
-      label: 'Pay via UPI',
-      detail: (
-        <div className="mt-3 ml-8">
-          <div className="bg-brand-50 border border-brand-200 rounded-lg p-3 flex items-center gap-3">
-            <div className="w-16 h-16 bg-brand-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <div className="text-center">
-                <div className="grid grid-cols-3 gap-0.5 p-1">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="w-3 h-3 bg-white rounded-sm opacity-80" />
-                  ))}
-                </div>
-                <p className="text-[8px] text-white font-600 mt-0.5">Scan QR</p>
-              </div>
-            </div>
-            <div>
-              <p className="text-xs font-700 text-text-heading">UPI ID</p>
-              <p className="text-sm font-700 text-brand-600">balajitraders@upi</p>
-              <p className="text-[11px] text-text-sub mt-1">Balaji Traders – Joura</p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: 'cod',
       icon: <Banknote size={20} className="text-amber-500" />,
       label: 'Cash on Delivery',
       sublabel: 'Pay when delivered',
-    },
-    {
-      id: 'card',
-      icon: <CreditCard size={20} className="text-blue-500" />,
-      label: 'Card / Net Banking',
-      badge: 'Razorpay',
-      detail: (
-        <div className="mt-2 ml-8">
-          <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-            <CreditCard size={14} className="text-blue-500" />
-            <p className="text-xs text-blue-700 font-600">
-              You will be redirected to Razorpay's secure payment page
-            </p>
-          </div>
-        </div>
-      ),
     },
   ];
 
@@ -393,7 +351,7 @@ export default function Checkout() {
   const [step, setStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState('express');
-  const [selectedPayment, setSelectedPayment] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState('cod');
   const [loading, setLoading] = useState(false);
 
   const {

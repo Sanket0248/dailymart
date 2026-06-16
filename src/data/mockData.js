@@ -435,11 +435,9 @@ export const DASHBOARD_STATS = {
 
 // ─── Delivery slots ──────────────────────────────────────────────────────────
 export const DELIVERY_SLOTS = [
-  { id: 'express', label: 'Express', time: '20–40 mins', icon: '⚡', price: 0 },
-  { id: 'slot1',   label: 'Today 11 AM–1 PM',  time: '11:00–13:00', icon: '🕚', price: 0 },
-  { id: 'slot2',   label: 'Today 2 PM–4 PM',   time: '14:00–16:00', icon: '🕑', price: 0 },
-  { id: 'slot3',   label: 'Today 5 PM–7 PM',   time: '17:00–19:00', icon: '🕔', price: 0 },
-  { id: 'slot4',   label: 'Tomorrow 10 AM–12 PM', time: '10:00–12:00', icon: '📅', price: 0 },
+  { id: 'express', label: 'Express Delivery', time: '20–40 mins', icon: '⚡', price: 0 },
+  { id: 'sameday', label: 'Same Day Delivery', time: 'By evening today', icon: '🕔', price: 0 },
+  { id: 'tomorrow', label: 'Tomorrow', time: 'Morning delivery', icon: '📅', price: 0 },
 ];
 
 // Helper: get product by id
